@@ -3,7 +3,6 @@ import SnapKit
 
 class MainViewController: UIViewController {
     
-    
     struct CellItem {
         let name: String
         let contacts: String
@@ -21,8 +20,8 @@ class MainViewController: UIViewController {
     private let addButton = UIButton()
     let tableView = UITableView()
     
-  
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
@@ -31,6 +30,8 @@ class MainViewController: UIViewController {
         
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
     }
+    
+    
     
     private func setTable() {
         tableView.delegate = self
@@ -52,28 +53,50 @@ class MainViewController: UIViewController {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
         }
+        navigationItem.titleView = listLabel
         
-        addButton.setTitle("추가", for: .normal)
-        addButton.setTitleColor(.systemGray, for: .normal)
-        addButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(7)
-            $0.right.equalToSuperview().inset(20)
-        }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "추가",
+            
+            style: .plain,
+            target: self,
+            action: #selector(buttonTapped)
+        )
+        
+        // 네비게이션 바 appearance 세팅
+        let ap = UINavigationBarAppearance()
+        ap.configureWithOpaqueBackground()
+        ap.backgroundColor = .systemBackground
+        
+        // 추가 버튼 색상
+        ap.buttonAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.systemGray
+        ]
+
+        // 백 버튼
+        ap.backButtonAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.label
+        ]
+
+        navigationController?.navigationBar.standardAppearance = ap
+        navigationController?.navigationBar.compactAppearance = ap
     }
     
     private func configureTable() {
         view.addSubview(tableView)
         tableView.rowHeight = 80
-        //tableView.backgroundColor = .systemGray3
         tableView.snp.makeConstraints {
-            $0.top.equalTo(listLabel.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
     }
-
-
+    
+    @objc private func buttonTapped() {
+        let nextPage = PhoneBookViewController()
+        navigationController?.pushViewController(nextPage, animated: true)
+    }
+    
+    
 }
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
