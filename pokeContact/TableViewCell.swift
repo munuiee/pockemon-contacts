@@ -31,7 +31,6 @@ class TableViewCell: UITableViewCell {
         
         avatar.layer.cornerRadius = 30
         avatar.layer.borderWidth = 1
-        avatar.layer.shouldRasterize = true
         avatar.clipsToBounds = true
         avatar.layer.borderColor = UIColor.lightGray.cgColor
 
