@@ -27,15 +27,6 @@ class MainViewController: UIViewController {
         configureUI()
         configureTable()
         setTable()
-        
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
-    }
-    
-    
-    
-    private func setTable() {
-        tableView.delegate = self
-        tableView.dataSource = self
     }
     
     
@@ -44,11 +35,12 @@ class MainViewController: UIViewController {
         [listLabel, addButton, tableView]
             .forEach { view.addSubview($0) }
         
-        // 상단바 UI
+        
+        /* ---------- 상단바 UI ----------*/
         listLabel.text = "친구 목록"
         listLabel.textAlignment = .center
         listLabel.textColor = .black
-        listLabel.font = .systemFont(ofSize: 20, weight: .semibold)
+        listLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         listLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
@@ -57,7 +49,6 @@ class MainViewController: UIViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "추가",
-            
             style: .plain,
             target: self,
             action: #selector(buttonTapped)
@@ -82,23 +73,30 @@ class MainViewController: UIViewController {
         navigationController?.navigationBar.compactAppearance = ap
     }
     
-    private func configureTable() {
-        view.addSubview(tableView)
-        tableView.rowHeight = 80
-        tableView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
-        }
-        
-    }
-    
     @objc private func buttonTapped() {
         let nextPage = PhoneBookViewController()
         navigationController?.pushViewController(nextPage, animated: true)
     }
     
     
+    /* ---------- 테이블뷰 -----------*/
+    private func configureTable() {
+        view.addSubview(tableView)
+        tableView.rowHeight = 80
+        tableView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    private func setTable() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
+    }
+
 }
 
+/* ---------- 테이블뷰 delegate -----------*/
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return AllItems.count
