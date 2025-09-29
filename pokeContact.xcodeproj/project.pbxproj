@@ -8,9 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		507345852E86626D00236604 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 507345842E86626D00236604 /* SnapKit */; };
+		507345E02E8A93A300236604 /* Entity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507345DE2E8A93A300236604 /* Entity+CoreDataClass.swift */; };
+		507345E12E8A93A300236604 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507345DF2E8A93A300236604 /* Entity+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		507345DE2E8A93A300236604 /* Entity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Entity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		507345DF2E8A93A300236604 /* Entity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Entity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		5164B68C2E85661800FED01A /* pokeContact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pokeContact.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +54,8 @@
 		5164B6832E85661800FED01A = {
 			isa = PBXGroup;
 			children = (
+				507345DE2E8A93A300236604 /* Entity+CoreDataClass.swift */,
+				507345DF2E8A93A300236604 /* Entity+CoreDataProperties.swift */,
 				5164B68E2E85661800FED01A /* pokeContact */,
 				5164B68D2E85661800FED01A /* Products */,
 			);
@@ -141,6 +147,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				507345E02E8A93A300236604 /* Entity+CoreDataClass.swift in Sources */,
+				507345E12E8A93A300236604 /* Entity+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,8 @@ class PhoneBookViewController: UIViewController {
     private let nameTextField = UITextField()
     private let contactTextField = UITextField()
     
+    var currentImageURL: String?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +43,7 @@ class PhoneBookViewController: UIViewController {
             title: "적용",
             style: .plain,
             target: self,
-            action: #selector(doneTapped)
+            action: #selector(saveButtonTapped)
         )
         
         // 네비게이션 바 appearance 세팅
@@ -125,6 +127,7 @@ class PhoneBookViewController: UIViewController {
                    let imageURL = URL(string: imageURLString) {
                     
                     self.loadImage(from: imageURL)
+                    self.currentImageURL = imageURL.absoluteString // coredata 저장용
                 }
             } catch {
                 print("디코딩 실패 \(error)")
@@ -144,7 +147,18 @@ class PhoneBookViewController: UIViewController {
         }.resume()
     }
     
-    @objc private func doneTapped() {
+//    @objc private func doneTapped() {
+//        let nextPage = MainViewController()
+//        navigationController?.pushViewController(nextPage, animated: true)
+//    }
+    
+    @objc private func saveButtonTapped() {
+        let name = nameTextField.text ?? ""
+        let contact = contactTextField.text ?? ""
+        let imageURL = currentImageURL ?? ""
+        CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
+        CoreDataManager.shared.readAllData()
+        
         let nextPage = MainViewController()
         navigationController?.pushViewController(nextPage, animated: true)
     }
