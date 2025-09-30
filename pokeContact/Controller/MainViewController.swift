@@ -26,6 +26,11 @@ class MainViewController: UIViewController {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
+        
+        // 이름순 정렬
+        mainInfo.sort {
+            ($0.name ?? "").localizedCaseInsensitiveCompare($1.name ?? "") == .orderedAscending
+        }
     }
     
     

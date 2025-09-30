@@ -1,10 +1,3 @@
-//
-//  PhoneBookViewController.swift
-//  pokeContact
-//
-//  Created by Jihye의 MacBook Pro on 9/26/25.
-//
-
 import Foundation
 import UIKit
 import SnapKit
@@ -17,6 +10,7 @@ class PhoneBookViewController: UIViewController {
     private let randomButton = UIButton()
     private let nameTextField = UITextField()
     private let contactTextField = UITextField()
+    private var applyButton: UIBarButtonItem?
     
     var currentImageURL: String?
     
@@ -39,12 +33,14 @@ class PhoneBookViewController: UIViewController {
         addLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         navigationItem.titleView = addLabel
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        applyButton = UIBarButtonItem(
             title: "적용",
             style: .plain,
             target: self,
             action: #selector(saveButtonTapped)
         )
+        applyButton?.isEnabled = false // 처음엔 비활성화
+        navigationItem.rightBarButtonItem = applyButton
         
         // 네비게이션 바 appearance 세팅
         let ap = UINavigationBarAppearance()
@@ -88,6 +84,7 @@ class PhoneBookViewController: UIViewController {
             $0.height.equalTo(35)
             $0.top.equalTo(randomButton.snp.bottom).offset(10)
         }
+        nameTextField.addTarget(self, action: #selector(useButton), for: .editingChanged)
         
         contactTextField.placeholder = " 전화번호"
         contactTextField.textAlignment = .left
@@ -101,9 +98,11 @@ class PhoneBookViewController: UIViewController {
             $0.height.equalTo(35)
             $0.top.equalTo(nameTextField.snp.bottom).offset(10)
         }
+        contactTextField.addTarget(self, action: #selector(useButton), for: .editingChanged)
         
         
     }
+
     
     /* ---------- API ---------- */
     // 포켓몬 정보 가져오기
@@ -156,6 +155,14 @@ class PhoneBookViewController: UIViewController {
         
         // 현재 화면을 닫고 이전 화면으로 돌아감
         navigationController?.popViewController(animated: true)
+    }
+    
+    // 예외처리: 텍스트필드 둘 중 하나 미입력시 적용 버튼 비활성화
+    @objc private func useButton() {
+        let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let contact = contactTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        applyButton?.isEnabled = !name.isEmpty && !contact.isEmpty
     }
     
     @objc private func randomTapped() {

@@ -54,7 +54,7 @@ class CoreDataManager {
     }
     
     
-    /* ---------- CRUD의 R ----------- */
+    /* ---------- CRUD의 R(콘솔 확인용) ----------- */
     func readAllData() {
         do {
             let informations = try self.persistentContainer.viewContext.fetch(Information.fetchRequest())
@@ -78,8 +78,8 @@ class CoreDataManager {
         let context = persistentContainer.viewContext
         
         let fecthRequest: NSFetchRequest<Information> = Information.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
-        fecthRequest.sortDescriptors = [sortDescriptor]
+//        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+//        fecthRequest.sortDescriptors = [sortDescriptor]
         
         do {
             InformationList = try context.fetch(fecthRequest)
