@@ -1,9 +1,4 @@
-//
-//  CoreDataManager.swift
-//  pokeContact
-//
-//  Created by Jihye의 MacBook Pro on 9/29/25.
-//
+// CoreData
 
 import Foundation
 import CoreData
@@ -11,7 +6,6 @@ import CoreData
 class CoreDataManager {
     // 싱글톤
     static let shared = CoreDataManager()
-    // Init 함수를 호출해 인스턴스를 또 생성하는 것을 막기 위해 접근 제어자 private
     private init() {}
     
     // MARK: - Core Data stack
@@ -40,6 +34,7 @@ class CoreDataManager {
         }
     }
     
+    /* ---------- CRUD의 C ---------- */
     func createData(name: String, contact: String, imageURL: String) {
         guard let entity = NSEntityDescription.entity(forEntityName: "Information", in: self.persistentContainer.viewContext)
         else { return }
@@ -58,6 +53,8 @@ class CoreDataManager {
         }
     }
     
+    
+    /* ---------- CRUD의 R ----------- */
     func readAllData() {
         do {
             let informations = try self.persistentContainer.viewContext.fetch(Information.fetchRequest())
@@ -74,6 +71,7 @@ class CoreDataManager {
         }
     }
     
+    /* ---------- CoreData에 저장된 데이터를 불러옴 (fetch) ---------- */
     func getInformation() -> [Information] {
         var InformationList = [Information]()
         

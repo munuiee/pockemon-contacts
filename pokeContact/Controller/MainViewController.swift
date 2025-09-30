@@ -5,20 +5,6 @@ class MainViewController: UIViewController {
     private var mainInfo: [Information] = []
     private let coreDataManager = CoreDataManager.shared
 
-    
-    struct CellItem {
-        let name: String
-        let contacts: String
-    }
-    
-    let AllItems: [CellItem] = [
-        .init(name: "가나디", contacts: "010-1234-5678"),
-        .init(name: "고냐니", contacts: "010-1234-5678"),
-        .init(name: "하치와레", contacts: "010-1234-5678"),
-        .init(name: "치이카와", contacts: "010-1234-5678"),
-        .init(name: "농담곰", contacts: "010-1234-5678")
-    ]
-    
     private let listLabel = UILabel()
     private let addButton = UIButton()
     let tableView = UITableView()
@@ -33,6 +19,7 @@ class MainViewController: UIViewController {
         mainInfo = coreDataManager.getInformation()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainInfo = coreDataManager.getInformation()
@@ -40,6 +27,7 @@ class MainViewController: UIViewController {
             self.tableView.reloadData()
         }
     }
+    
     
     
     private func configureUI() {

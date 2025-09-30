@@ -1,10 +1,3 @@
-//
-//  TableViewCell.swift
-//  pokeContact
-//
-//  Created by Jihye의 MacBook Pro on 9/26/25.
-//
-
 import Foundation
 import UIKit
 import SnapKit
@@ -24,6 +17,8 @@ class TableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    /* ---------- 셀 레이아웃 ---------- */
     
     func configureUI() {
         [avatar, nameLabel, contactLabel]
@@ -55,7 +50,7 @@ class TableViewCell: UITableViewCell {
     
     func configure(with info: Information) {
         nameLabel.text = info.name ?? "No Name"
-        contactLabel.text = info.contact ?? "No Contact"
+        contactLabel.text = PhoneFormatter.korean(info.contact)
         
         if let urlStr = info.imageURL,
            let url = URL(string: urlStr) {
