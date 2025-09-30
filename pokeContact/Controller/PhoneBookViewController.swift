@@ -147,11 +147,6 @@ class PhoneBookViewController: UIViewController {
         }.resume()
     }
     
-//    @objc private func doneTapped() {
-//        let nextPage = MainViewController()
-//        navigationController?.pushViewController(nextPage, animated: true)
-//    }
-    
     @objc private func saveButtonTapped() {
         let name = nameTextField.text ?? ""
         let contact = contactTextField.text ?? ""
@@ -159,8 +154,8 @@ class PhoneBookViewController: UIViewController {
         CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
         CoreDataManager.shared.readAllData()
         
-        let nextPage = MainViewController()
-        navigationController?.pushViewController(nextPage, animated: true)
+        // 현재 화면을 닫고 이전 화면으로 돌아감
+        navigationController?.popViewController(animated: true)
     }
     
     @objc private func randomTapped() {

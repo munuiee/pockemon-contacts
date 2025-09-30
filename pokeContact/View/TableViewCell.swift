@@ -53,9 +53,20 @@ class TableViewCell: UITableViewCell {
         
     }
     
-    func configure(data: MainViewController.CellItem) {
-        nameLabel.text = data.name
-        contactLabel.text = data.contacts
+    func configure(with info: Information) {
+        nameLabel.text = info.name ?? "No Name"
+        contactLabel.text = info.contact ?? "No Contact"
+        
+        if let urlStr = info.imageURL,
+           let url = URL(string: urlStr) {
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                if let data, error == nil {
+                    DispatchQueue.main.async {
+                        self.avatar.image = UIImage(data: data)
+                    }
+                }
+            }.resume()
+        }
     }
     
     

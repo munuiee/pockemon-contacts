@@ -2,6 +2,9 @@ import UIKit
 import SnapKit
 
 class MainViewController: UIViewController {
+    private var mainInfo: [Information] = []
+    private let coreDataManager = CoreDataManager.shared
+
     
     struct CellItem {
         let name: String
@@ -27,6 +30,15 @@ class MainViewController: UIViewController {
         configureUI()
         configureTable()
         setTable()
+        mainInfo = coreDataManager.getInformation()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        mainInfo = coreDataManager.getInformation()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     
@@ -99,15 +111,14 @@ class MainViewController: UIViewController {
 /* ---------- 테이블뷰 delegate -----------*/
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return AllItems.count
+        return mainInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifier, for: indexPath) as? TableViewCell
         else { return .init() }
-        
-        let data = AllItems[indexPath.row]
-        cell.configure(data: data)
+         
+        cell.configure(with: mainInfo[indexPath.row])
         return cell
     }
 }

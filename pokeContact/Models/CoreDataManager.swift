@@ -73,4 +73,22 @@ class CoreDataManager {
             print("데이터 읽기 실패")
         }
     }
+    
+    func getInformation() -> [Information] {
+        var InformationList = [Information]()
+        
+        let context = persistentContainer.viewContext
+        
+        let fecthRequest: NSFetchRequest<Information> = Information.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        fecthRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            InformationList = try context.fetch(fecthRequest)
+        } catch {
+            print("fetching error: \(error)")
+        }
+        
+        return InformationList
+    }
 }
