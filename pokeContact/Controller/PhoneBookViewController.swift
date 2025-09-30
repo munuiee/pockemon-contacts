@@ -13,12 +13,37 @@ class PhoneBookViewController: UIViewController {
     private var applyButton: UIBarButtonItem?
     
     var currentImageURL: String?
+    var infoEdit: Information?
+    
+    // 예외처리 알림창
+    let alert = UIAlertController(
+        title: "저장되지 않았습니다.",
+        message: "입력한 정보가 저장되지 않았습니다. 그래도 나가시겠습니까?",
+        preferredStyle: .alert
+    )
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        
+        // 셀 클릭시 뜨는 화면 (입력된 값 포함)
+        if let info = infoEdit {
+            addLabel.text = info.name
+            nameTextField.text = info.name
+            contactTextField.text = info.contact
+            if let s = info.imageURL, let url = URL(string: s) {
+                URLSession.shared.dataTask(with: url) { data, _, _ in
+                    guard let data else { return }
+                    DispatchQueue.main.async {
+                        self.profileImage.image = UIImage(data: data)
+                    }
+                }.resume()
+            }
+        } else {
+            addLabel.text = "연락처 추가"
         }
+    }
     
     private func configureUI() {
         [addLabel, doneButton, profileImage, randomButton, nameTextField, contactTextField]
@@ -52,7 +77,7 @@ class PhoneBookViewController: UIViewController {
         
         
         /* ---------- 수정 화면 UI ---------- */
-       // profileImage.image = UIImage(systemName: "person.circle.fill")
+        // profileImage.image = UIImage(systemName: "person.circle.fill")
         profileImage.contentMode = .scaleAspectFit
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = 100
@@ -73,8 +98,11 @@ class PhoneBookViewController: UIViewController {
         randomButton.addTarget(self, action: #selector(randomTapped), for: .touchUpInside)
         
         nameTextField.placeholder = " 이름"
+        nameTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 0))
+        nameTextField.leftViewMode = .always
         nameTextField.textAlignment = .left
         nameTextField.keyboardType = .default
+        nameTextField.layer.cornerRadius = 5
         nameTextField.borderStyle = .none  // 기본 테두리 제거
         nameTextField.layer.borderColor = UIColor.lightGray.cgColor
         nameTextField.layer.borderWidth = 1
@@ -87,8 +115,11 @@ class PhoneBookViewController: UIViewController {
         nameTextField.addTarget(self, action: #selector(useButton), for: .editingChanged)
         
         contactTextField.placeholder = " 전화번호"
+        contactTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 0))
+        contactTextField.leftViewMode = .always
         contactTextField.textAlignment = .left
         contactTextField.keyboardType = .numberPad
+        contactTextField.layer.cornerRadius = 5
         contactTextField.borderStyle = .none  // 기본 테두리 제거
         contactTextField.layer.borderColor = UIColor.lightGray.cgColor
         contactTextField.layer.borderWidth = 1
@@ -102,7 +133,7 @@ class PhoneBookViewController: UIViewController {
         
         
     }
-
+    
     
     /* ---------- API ---------- */
     // 포켓몬 정보 가져오기
@@ -170,5 +201,5 @@ class PhoneBookViewController: UIViewController {
     }
     
     
-
+    
 }

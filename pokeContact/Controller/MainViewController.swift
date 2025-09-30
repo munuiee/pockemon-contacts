@@ -98,6 +98,16 @@ class MainViewController: UIViewController {
         tableView.dataSource = self
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let selected = mainInfo[indexPath.row]
+        
+        let nextPage = PhoneBookViewController()
+        nextPage.infoEdit = selected
+        navigationController?.pushViewController(nextPage, animated: true)
+    }
 
 }
 
