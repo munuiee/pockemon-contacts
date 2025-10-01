@@ -3,6 +3,13 @@
 import Foundation
 import CoreData
 
+// 업데이트 구조체모델
+struct UpdateInfo {
+    var updateName: String?
+    var updateContact: String?
+    var updateImageURL: String?
+}
+
 class CoreDataManager {
     // 싱글톤
     static let shared = CoreDataManager()
@@ -86,5 +93,18 @@ class CoreDataManager {
         }
         
         return InformationList
+    }
+    
+    /* ---------- CRUD의 U ---------- */
+    func updateData(info: Information, with newData: UpdateInfo) {
+        info.name = newData.updateName
+        info.contact = newData.updateContact
+        info.imageURL = newData.updateImageURL
+        
+        do {
+            try persistentContainer.viewContext.save()
+        } catch {
+            print("업데이트 실패: \(error)")
+        }
     }
 }

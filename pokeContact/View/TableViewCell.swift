@@ -52,6 +52,7 @@ class TableViewCell: UITableViewCell {
         nameLabel.text = info.name ?? "No Name"
         contactLabel.text = PhoneFormatter.korean(info.contact)
         
+        
         if let urlStr = info.imageURL,
            let url = URL(string: urlStr) {
             URLSession.shared.dataTask(with: url) { data, _, error in

@@ -8,6 +8,7 @@ class MainViewController: UIViewController {
     private let listLabel = UILabel()
     private let addButton = UIButton()
     let tableView = UITableView()
+    private var didReloadOnce = false
     
     
     
@@ -30,6 +31,14 @@ class MainViewController: UIViewController {
         // 이름순 정렬
         mainInfo.sort {
             ($0.name ?? "").localizedCaseInsensitiveCompare($1.name ?? "") == .orderedAscending
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !didReloadOnce {
+            tableView.reloadData()
+            didReloadOnce = true
         }
     }
     

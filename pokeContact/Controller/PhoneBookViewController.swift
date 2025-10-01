@@ -11,9 +11,10 @@ class PhoneBookViewController: UIViewController {
     private let nameTextField = UITextField()
     private let contactTextField = UITextField()
     private var applyButton: UIBarButtonItem?
-    
+    private var imageChanged: Bool = false
     var currentImageURL: String?
     var infoEdit: Information?
+    
     
     // 예외처리 알림창
     let alert = UIAlertController(
@@ -26,6 +27,8 @@ class PhoneBookViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        currentImageURL = infoEdit?.imageURL
+        imageChanged = false
         
         // 셀 클릭시 뜨는 화면 (입력된 값 포함)
         if let info = infoEdit {
@@ -158,6 +161,7 @@ class PhoneBookViewController: UIViewController {
                     
                     self.loadImage(from: imageURL)
                     self.currentImageURL = imageURL.absoluteString // coredata 저장용
+                    self.imageChanged = true
                 }
             } catch {
                 print("디코딩 실패 \(error)")
@@ -181,11 +185,26 @@ class PhoneBookViewController: UIViewController {
         let name = nameTextField.text ?? ""
         let contact = contactTextField.text ?? ""
         let imageURL = currentImageURL ?? ""
-        CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
-        CoreDataManager.shared.readAllData()
         
+        if let existingInfo = infoEdit {
+            var update = UpdateInfo(updateName: name, updateContact: contact, updateImageURL: nil)
+            if imageChanged,
+               let url = currentImageURL,
+               let validURL = URL(string: url) {
+                update.updateImageURL = validURL.absoluteString
+            }
+            CoreDataManager.shared.updateData(info: existingInfo, with: update)
+            
+        } else {
+            CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
+            imageChanged = true
+            CoreDataManager.shared.readAllData()
+            
+        }
         // 현재 화면을 닫고 이전 화면으로 돌아감
         navigationController?.popViewController(animated: true)
+        
+        
     }
     
     // 예외처리: 텍스트필드 둘 중 하나 미입력시 적용 버튼 비활성화
