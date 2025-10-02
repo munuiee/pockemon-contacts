@@ -118,7 +118,7 @@ class PhoneBookViewController: UIViewController {
         navigationController?.navigationBar.compactAppearance = ap
         
         
-        /* ---------- 수정 화면 UI ---------- */
+        /* ---------- 화면 UI ---------- */
         profileImage.contentMode = .scaleAspectFit
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = 100
