@@ -15,7 +15,6 @@ class PhoneBookViewController: UIViewController {
     var currentImageURL: String?
     var infoEdit: Information?
     
-    
     // 예외처리 알림창
     let alert = UIAlertController(
         title: "저장되지 않았습니다.",
@@ -48,6 +47,32 @@ class PhoneBookViewController: UIViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+
+        guard let s = infoEdit?.imageURL, !s.isEmpty, let url = URL(string: s) else {
+            print("detail url is empty or invalid:", infoEdit?.imageURL as Any)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard error == nil,
+                  let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
+                  let data = data, let img = UIImage(data: data) else { return }
+            DispatchQueue.main.async {
+                if self.infoEdit?.imageURL == s {
+                    self.profileImage.image = img
+                }
+            }
+        }.resume()
+        
+        print("detail url:", infoEdit?.imageURL ?? "nil")
+    }
+    
+
+    
+    
     private func configureUI() {
         [addLabel, doneButton, profileImage, randomButton, nameTextField, contactTextField]
             .forEach { view.addSubview($0) }
@@ -55,6 +80,7 @@ class PhoneBookViewController: UIViewController {
         
         
         /* ---------- 상단바 UI ---------- */
+        
         addLabel.text = "연락처 추가"
         addLabel.textColor = .black
         addLabel.textAlignment = .center
@@ -80,7 +106,7 @@ class PhoneBookViewController: UIViewController {
         
         
         /* ---------- 수정 화면 UI ---------- */
-        // profileImage.image = UIImage(systemName: "person.circle.fill")
+        
         profileImage.contentMode = .scaleAspectFit
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = 100
@@ -139,6 +165,7 @@ class PhoneBookViewController: UIViewController {
     
     
     /* ---------- API ---------- */
+    
     // 포켓몬 정보 가져오기
     func fetchPokemon() {
         let id = Int.random(in: 1...1000)
@@ -177,25 +204,42 @@ class PhoneBookViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.profileImage.image = image
+                self.currentImageURL = url.absoluteString
+                self.imageChanged = true
+                self.useButton()                  // 버튼 상태 즉시 갱신
             }
         }.resume()
     }
     
+    
+    
+    
     @objc private func saveButtonTapped() {
         let name = nameTextField.text ?? ""
         let contact = contactTextField.text ?? ""
-        let imageURL = currentImageURL ?? ""
+        let imageURL: String? = {
+            guard let s = currentImageURL, !s.isEmpty, URL(string: s) != nil else { return nil }
+            return s
+        }()
+        print("💾 will save imageURL:", imageURL as Any)
         
         if let existingInfo = infoEdit {
+            
             var update = UpdateInfo(updateName: name, updateContact: contact, updateImageURL: nil)
             if imageChanged,
-               let url = currentImageURL,
-               let validURL = URL(string: url) {
-                update.updateImageURL = validURL.absoluteString
+               let s = currentImageURL,
+               URL(string: s) != nil {
+                update.updateImageURL = s
             }
+
+            print("💾 will update imageURL:", update.updateImageURL as Any)
+
             CoreDataManager.shared.updateData(info: existingInfo, with: update)
             
         } else {
+            let finalURL = currentImageURL?.trimmingCharacters(in: .whitespacesAndNewlines)
+            print("💾 will create imageURL:", finalURL as Any)
+
             CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
             imageChanged = true
             CoreDataManager.shared.readAllData()
@@ -207,16 +251,18 @@ class PhoneBookViewController: UIViewController {
         
     }
     
-    // 예외처리: 텍스트필드 둘 중 하나 미입력시 적용 버튼 비활성화
+    // 예외처리: 텍스트필드 둘 중 하나 미입력시 적용 버튼 비활성화 & 랜덤 이미지 수정시 버튼 활성화
     @objc private func useButton() {
         let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let contact = contactTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        
-        applyButton?.isEnabled = !name.isEmpty && !contact.isEmpty
+        let hasTextChanges = (name != infoEdit?.name) || (contact != infoEdit?.contact)
+
+        applyButton?.isEnabled = (!name.isEmpty && !contact.isEmpty) && (hasTextChanges || imageChanged)
     }
     
     @objc private func randomTapped() {
         fetchPokemon()
+        useButton()
     }
     
     

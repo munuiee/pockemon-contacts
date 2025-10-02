@@ -16,7 +16,7 @@ class CoreDataManager {
     private init() {}
     
     // MARK: - Core Data stack
-
+    
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "pokeContact")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -26,9 +26,9 @@ class CoreDataManager {
         })
         return container
     }()
-
+    
     // MARK: - Core Data Saving support
-
+    
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
@@ -42,7 +42,7 @@ class CoreDataManager {
     }
     
     /* ---------- CRUD의 C ---------- */
-    func createData(name: String, contact: String, imageURL: String) {
+    func createData(name: String, contact: String, imageURL: String?) {
         guard let entity = NSEntityDescription.entity(forEntityName: "Information", in: self.persistentContainer.viewContext)
         else { return }
         
@@ -99,12 +99,32 @@ class CoreDataManager {
     func updateData(info: Information, with newData: UpdateInfo) {
         info.name = newData.updateName
         info.contact = newData.updateContact
-        info.imageURL = newData.updateImageURL
+        //info.imageURL = newData.updateImageURL
+        
+        if let raw = newData.updateImageURL?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !raw.isEmpty {
+            info.imageURL = raw
+        }
         
         do {
             try persistentContainer.viewContext.save()
+            print("업데이트 성공: imageURL=\(info.imageURL ?? "nil")")
         } catch {
             print("업데이트 실패: \(error)")
         }
     }
+    
+    /* ----------- CRUD의 D ---------- */
+    func deleteData(info: Information) {
+        let context = persistentContainer.viewContext
+        context.delete(info)
+        
+        do {
+            try context.save()
+            print("✅ 개별 삭제 성공")
+        } catch {
+            print("❌ 전체 삭제 실패: \(error)")
+        }
+    }
+
 }

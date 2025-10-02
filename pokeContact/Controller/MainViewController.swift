@@ -18,11 +18,14 @@ class MainViewController: UIViewController {
         configureTable()
         setTable()
         mainInfo = coreDataManager.getInformation()
+        // CoreDataManager.shared.deleteAll()
+
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         mainInfo = coreDataManager.getInformation()
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -112,10 +115,32 @@ class MainViewController: UIViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let selected = mainInfo[indexPath.row]
+        print("➡️ push url:", selected.imageURL as Any)
         
         let nextPage = PhoneBookViewController()
         nextPage.infoEdit = selected
         navigationController?.pushViewController(nextPage, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        print("👉 swipe called", indexPath)
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) {
+            [weak self](action, view, completion) in
+            guard let self = self else { return }
+            
+            let info = self.mainInfo[indexPath.row]
+            
+            CoreDataManager.shared.deleteData(info: info)
+            self.mainInfo.remove(at: indexPath.row)
+            
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            completion(true)
+        }
+        
+        deleteAction.image = UIImage(systemName: "trash")
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe = true
+        return configuration
     }
 
 }
@@ -134,4 +159,5 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 }
+
 
