@@ -35,6 +35,7 @@ class MainViewController: UIViewController {
         mainInfo.sort {
             ($0.name ?? "").localizedCaseInsensitiveCompare($1.name ?? "") == .orderedAscending
         }
+        //navigationItem.leftBarButtonItem = editButtonItem
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -54,6 +55,16 @@ class MainViewController: UIViewController {
         
         
         /* ---------- 상단바 UI ----------*/
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "편집",
+            style: .plain,
+            target: self,
+            action: #selector(editingTapped)
+        )
+        
+
+        
         listLabel.text = "친구 목록"
         listLabel.textAlignment = .center
         listLabel.textColor = .black
@@ -64,12 +75,11 @@ class MainViewController: UIViewController {
         }
         navigationItem.titleView = listLabel
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "추가",
-            style: .plain,
-            target: self,
-            action: #selector(buttonTapped)
-        )
+        
+        let addButton = UIBarButtonItem(title: "추가", style: .plain, target: self, action: #selector(buttonTapped))
+        addButton.setTitleTextAttributes([.foregroundColor: UIColor.systemGray], for: .normal)
+        addButton.setTitleTextAttributes([.foregroundColor: UIColor.systemGray], for: .highlighted) // 선택(눌림) 상태도 동일하게
+        navigationItem.rightBarButtonItem = addButton
         
         // 네비게이션 바 appearance 세팅
         let ap = UINavigationBarAppearance()
@@ -79,6 +89,11 @@ class MainViewController: UIViewController {
         // 추가 버튼 색상
         ap.buttonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.systemGray
+        ]
+        
+        //
+        ap.buttonAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.label
         ]
 
         // 백 버튼
@@ -93,6 +108,14 @@ class MainViewController: UIViewController {
     @objc private func buttonTapped() {
         let nextPage = PhoneBookViewController()
         navigationController?.pushViewController(nextPage, animated: true)
+    }
+    
+    @objc private func editingTapped() {
+        let editing = !tableView.isEditing
+        tableView.setEditing(editing, animated: true)
+        // 커스텀 버튼을 쓴다면 제목만 바꿔주기
+        navigationItem.leftBarButtonItem?.title = editing ? "완료" : "편집"
+        // editButtonItem.isSelected = ...  ❌ (선택 상태는 의미 없음)
     }
     
     
@@ -141,6 +164,24 @@ class MainViewController: UIViewController {
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = true
         return configuration
+    }
+    
+    // 편집 버튼
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool { true }
+
+    // 편집 모드에서 표시할 스타일을 '삭제'로
+    func tableView(_ tableView: UITableView,
+                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle { .delete }
+
+    func tableView(_ tableView: UITableView,
+                   commit editingStyle: UITableViewCell.EditingStyle,
+                   forRowAt indexPath: IndexPath) {
+        guard editingStyle == .delete else { return }
+        let info = mainInfo[indexPath.row]
+        CoreDataManager.shared.deleteData(info: info)
+        mainInfo.remove(at: indexPath.row)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
     }
 
 }

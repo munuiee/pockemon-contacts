@@ -9,6 +9,9 @@ class TableViewCell: UITableViewCell {
     let nameLabel = UILabel()
     let contactLabel = UILabel()
     
+    private var imageTask: URLSessionDataTask?
+    private var currentImageURL: URL?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureUI()
@@ -52,19 +55,61 @@ class TableViewCell: UITableViewCell {
         nameLabel.text = info.name ?? "No Name"
         contactLabel.text = PhoneFormatter.korean(info.contact)
         
+        imageTask?.cancel()
+        imageTask = nil
+        currentImageURL = nil
+        avatar.image = UIImage(systemName: "person.circle")
         
-        if let urlStr = info.imageURL,
-           let url = URL(string: urlStr) {
-            URLSession.shared.dataTask(with: url) { data, _, error in
-                if let data, error == nil {
-                    DispatchQueue.main.async {
-                        self.avatar.image = UIImage(data: data)
-                    }
-                }
-            }.resume()
+        guard let urlStr = info.imageURL, let url = URL(string:urlStr) else { return }
+        currentImageURL = url
+        
+        if let cached = ImageCache.shared.image(forKey: urlStr) {
+            avatar.image = cached
+            return
         }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let self = self,
+                  let data = data,
+                  let image = UIImage(data: data) else { return }
+            
+            ImageCache.shared.set(image, forKey: urlStr)
+            
+            DispatchQueue.main.async {
+                if self.currentImageURL == url {
+                    self.avatar.image = image
+                }
+            }
+        }
+        task.resume()
+        imageTask = task
+
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageTask?.cancel()
+        imageTask = nil
+        currentImageURL = nil
+        avatar.image = UIImage(systemName: "person.circle")
     }
     
     
     
+}
+
+// 빌드시 다른 이미지가 보이는 문제 해결
+final class ImageCache {
+    static let shared = ImageCache()
+    
+    private let cache = NSCache<NSString, UIImage>()
+    private init() {}
+    
+    func image(forKey key: String) -> UIImage? {
+        cache.object(forKey: key as NSString)
+    }
+    
+    func set(_ image: UIImage, forKey key: String) {
+        cache.setObject(image, forKey: key as NSString)
+    }
 }
