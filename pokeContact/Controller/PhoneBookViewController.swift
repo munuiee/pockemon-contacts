@@ -15,19 +15,13 @@ class PhoneBookViewController: UIViewController {
     var currentImageURL: String?
     var infoEdit: Information?
     
-    // 예외처리 알림창
-    let alert = UIAlertController(
-        title: "저장되지 않았습니다.",
-        message: "입력한 정보가 저장되지 않았습니다. 그래도 나가시겠습니까?",
-        preferredStyle: .alert
-    )
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         currentImageURL = infoEdit?.imageURL
         imageChanged = false
+        
         
         // 셀 클릭시 뜨는 화면 (입력된 값 포함)
         if let info = infoEdit {
@@ -81,6 +75,25 @@ class PhoneBookViewController: UIViewController {
         
         /* ---------- 상단바 UI ---------- */
         
+        self.navigationItem.hidesBackButton = true
+        
+        let backButton = UIButton(type: .system)
+        
+        backButton.setTitle(" Back", for: .normal)
+        backButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        let config = UIImage.SymbolConfiguration(pointSize: 19, weight: .semibold)
+        let image = UIImage(systemName: "chevron.left", withConfiguration: config)
+        backButton.setImage(image, for: .normal)
+        
+        backButton.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1.0)
+        backButton.sizeToFit()
+        backButton.semanticContentAttribute = .forceLeftToRight
+
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+
+
+
         addLabel.text = "연락처 추가"
         addLabel.textColor = .black
         addLabel.textAlignment = .center
@@ -206,12 +219,49 @@ class PhoneBookViewController: UIViewController {
                 self.profileImage.image = image
                 self.currentImageURL = url.absoluteString
                 self.imageChanged = true
-                self.useButton()                  // 버튼 상태 즉시 갱신
+                self.useButton()
             }
         }.resume()
     }
     
+    /* ---------- Back 버튼 클릭시 알럿 띄우기 ---------- */
     
+    @objc private func backButtonTapped() {
+        view.endEditing(true)
+        
+        if backButtonCheck() {
+            let alert = UIAlertController(
+                title: "나가기",
+                message: "작성된 내용이 저장되지 않습니다. 나가시겠습니까?",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+            alert.addAction(UIAlertAction(title: "확인", style: .destructive, handler: { _ in
+                self.navigationController?.popViewController(animated: true)
+            }))
+            
+            present(alert, animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
+    private func backButtonCheck() -> Bool {
+        let nameNow = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let contactNow = (contactTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // 수정 화면
+        let nameEdit = (infoEdit?.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let contactEdit = (infoEdit?.contact ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        let textChanged = (nameNow != nameEdit) || (contactNow != contactEdit)
+        
+        let imageURLChanged: Bool = {
+            guard let picked = currentImageURL else { return false }
+            return picked != (infoEdit?.imageURL ?? "")
+        }()
+        
+        return textChanged || imageURLChanged 
+    }
     
     
     @objc private func saveButtonTapped() {
