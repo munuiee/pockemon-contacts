@@ -4,7 +4,6 @@ import SnapKit
 class MainViewController: UIViewController {
     private var mainInfo: [Information] = []
     private let coreDataManager = CoreDataManager.shared
-
     private let listLabel = UILabel()
     private let addButton = UIButton()
     let tableView = UITableView()
@@ -18,8 +17,6 @@ class MainViewController: UIViewController {
         configureTable()
         setTable()
         mainInfo = coreDataManager.getInformation()
-        // CoreDataManager.shared.deleteAll()
-
     }
     
     
@@ -35,7 +32,6 @@ class MainViewController: UIViewController {
         mainInfo.sort {
             ($0.name ?? "").localizedCaseInsensitiveCompare($1.name ?? "") == .orderedAscending
         }
-        //navigationItem.leftBarButtonItem = editButtonItem
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -55,14 +51,12 @@ class MainViewController: UIViewController {
         
         
         /* ---------- 상단바 UI ----------*/
-        
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "편집",
             style: .plain,
             target: self,
             action: #selector(editingTapped)
         )
-        
 
         
         listLabel.text = "친구 목록"
@@ -86,37 +80,30 @@ class MainViewController: UIViewController {
         ap.configureWithOpaqueBackground()
         ap.backgroundColor = .systemBackground
         
+        
         // 추가 버튼 색상
         ap.buttonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.systemGray
-        ]
-        
-        //
-        ap.buttonAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor.label
-        ]
-
-        // 백 버튼
-        ap.backButtonAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor.label
         ]
 
         navigationController?.navigationBar.standardAppearance = ap
         navigationController?.navigationBar.compactAppearance = ap
     }
     
+    
     @objc private func buttonTapped() {
         let nextPage = PhoneBookViewController()
         navigationController?.pushViewController(nextPage, animated: true)
     }
     
+    
     @objc private func editingTapped() {
         let editing = !tableView.isEditing
         tableView.setEditing(editing, animated: true)
-        // 커스텀 버튼을 쓴다면 제목만 바꿔주기
         navigationItem.leftBarButtonItem?.title = editing ? "완료" : "편집"
-        // editButtonItem.isSelected = ...  ❌ (선택 상태는 의미 없음)
     }
+    
+    
     
     
     /* ---------- 테이블뷰 -----------*/
@@ -138,15 +125,14 @@ class MainViewController: UIViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let selected = mainInfo[indexPath.row]
-        print("➡️ push url:", selected.imageURL as Any)
-        
         let nextPage = PhoneBookViewController()
         nextPage.infoEdit = selected
         navigationController?.pushViewController(nextPage, animated: true)
     }
     
+    
+    
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        print("👉 swipe called", indexPath)
         let deleteAction = UIContextualAction(style: .destructive, title: nil) {
             [weak self](action, view, completion) in
             guard let self = self else { return }
@@ -167,10 +153,9 @@ class MainViewController: UIViewController {
     }
     
     // 편집 버튼
-    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool { true }
 
-    // 편집 모드에서 표시할 스타일을 '삭제'로
+    // 편집 모드에서 표시할 스타일을 삭제
     func tableView(_ tableView: UITableView,
                    editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle { .delete }
 
@@ -185,6 +170,8 @@ class MainViewController: UIViewController {
     }
 
 }
+
+
 
 /* ---------- 테이블뷰 delegate -----------*/
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {

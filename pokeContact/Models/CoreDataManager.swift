@@ -41,6 +41,7 @@ class CoreDataManager {
         }
     }
     
+    
     /* ---------- CRUD의 C ---------- */
     func createData(name: String, contact: String, imageURL: String?) {
         guard let entity = NSEntityDescription.entity(forEntityName: "Information", in: self.persistentContainer.viewContext)
@@ -78,6 +79,7 @@ class CoreDataManager {
         }
     }
     
+    
     /* ---------- CoreData에 저장된 데이터를 불러옴 (fetch) ---------- */
     func getInformation() -> [Information] {
         var InformationList = [Information]()
@@ -94,6 +96,7 @@ class CoreDataManager {
         
         return InformationList
     }
+    
     
     /* ---------- CRUD의 U ---------- */
     func updateData(info: Information, with newData: UpdateInfo) {
@@ -123,7 +126,7 @@ class CoreDataManager {
             try context.save()
             print("✅ 개별 삭제 성공")
         } catch {
-            print("❌ 전체 삭제 실패: \(error)")
+            print("❌ 삭제 실패: \(error)")
         }
     }
 

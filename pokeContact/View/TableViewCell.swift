@@ -21,8 +21,8 @@ class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /* ---------- 셀 레이아웃 ---------- */
     
+    /* ---------- 셀 레이아웃 ---------- */
     func configureUI() {
         [avatar, nameLabel, contactLabel]
             .forEach { contentView.addSubview($0) }
@@ -51,6 +51,7 @@ class TableViewCell: UITableViewCell {
         
     }
     
+    
     func configure(with info: Information) {
         nameLabel.text = info.name ?? "No Name"
         contactLabel.text = PhoneFormatter.korean(info.contact)
@@ -58,7 +59,7 @@ class TableViewCell: UITableViewCell {
         imageTask?.cancel()
         imageTask = nil
         currentImageURL = nil
-        avatar.image = UIImage(systemName: "person.circle")
+        avatar.image = UIImage(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
         
         guard let urlStr = info.imageURL, let url = URL(string:urlStr) else { return }
         currentImageURL = url
@@ -86,16 +87,15 @@ class TableViewCell: UITableViewCell {
 
     }
     
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageTask?.cancel()
         imageTask = nil
         currentImageURL = nil
-        avatar.image = UIImage(systemName: "person.circle")
+        avatar.image = UIImage(systemName: "arrow.trianglehead.counterclockwise.rotate.90")
     }
-    
-    
-    
+      
 }
 
 // 빌드시 다른 이미지가 보이는 문제 해결

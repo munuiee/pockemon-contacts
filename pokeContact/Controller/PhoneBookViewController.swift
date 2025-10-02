@@ -12,7 +12,7 @@ class PhoneBookViewController: UIViewController {
     private let contactTextField = UITextField()
     private var applyButton: UIBarButtonItem?
     private var imageChanged: Bool = false
-    var currentImageURL: String?
+    private var currentImageURL: String?
     var infoEdit: Information?
     
     
@@ -41,9 +41,10 @@ class PhoneBookViewController: UIViewController {
         }
     }
     
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
 
         guard let s = infoEdit?.imageURL, !s.isEmpty, let url = URL(string: s) else {
             print("detail url is empty or invalid:", infoEdit?.imageURL as Any)
@@ -74,7 +75,6 @@ class PhoneBookViewController: UIViewController {
         
         
         /* ---------- 상단바 UI ---------- */
-        
         self.navigationItem.hidesBackButton = true
         
         let backButton = UIButton(type: .system)
@@ -119,7 +119,6 @@ class PhoneBookViewController: UIViewController {
         
         
         /* ---------- 수정 화면 UI ---------- */
-        
         profileImage.contentMode = .scaleAspectFit
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = 100
@@ -178,7 +177,6 @@ class PhoneBookViewController: UIViewController {
     
     
     /* ---------- API ---------- */
-    
     // 포켓몬 정보 가져오기
     func fetchPokemon() {
         let id = Int.random(in: 1...1000)
@@ -245,11 +243,13 @@ class PhoneBookViewController: UIViewController {
             navigationController?.popViewController(animated: true)
         }
     }
+    
+    
     private func backButtonCheck() -> Bool {
         let nameNow = (nameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let contactNow = (contactTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // 수정 화면
+        // 수정 화면 알럿
         let nameEdit = (infoEdit?.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let contactEdit = (infoEdit?.contact ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -271,10 +271,8 @@ class PhoneBookViewController: UIViewController {
             guard let s = currentImageURL, !s.isEmpty, URL(string: s) != nil else { return nil }
             return s
         }()
-        print("💾 will save imageURL:", imageURL as Any)
         
         if let existingInfo = infoEdit {
-            
             var update = UpdateInfo(updateName: name, updateContact: contact, updateImageURL: nil)
             if imageChanged,
                let s = currentImageURL,
@@ -282,13 +280,10 @@ class PhoneBookViewController: UIViewController {
                 update.updateImageURL = s
             }
 
-            print("💾 will update imageURL:", update.updateImageURL as Any)
-
             CoreDataManager.shared.updateData(info: existingInfo, with: update)
             
         } else {
             let finalURL = currentImageURL?.trimmingCharacters(in: .whitespacesAndNewlines)
-            print("💾 will create imageURL:", finalURL as Any)
 
             CoreDataManager.shared.createData(name: name, contact: contact, imageURL: imageURL)
             imageChanged = true
@@ -297,8 +292,7 @@ class PhoneBookViewController: UIViewController {
         }
         // 현재 화면을 닫고 이전 화면으로 돌아감
         navigationController?.popViewController(animated: true)
-        
-        
+  
     }
     
     // 예외처리: 텍스트필드 둘 중 하나 미입력시 적용 버튼 비활성화 & 랜덤 이미지 수정시 버튼 활성화
